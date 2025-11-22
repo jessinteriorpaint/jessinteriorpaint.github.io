@@ -242,6 +242,10 @@
       </div>
       <div class="customer-block">
         <div class="section-title">Customer Information</div>
+        <label for="customer-select">Select Existing Customer</label>
+        <select id="customer-select">
+          <option value="">-- Select --</option>
+        </select>
         <label>Name</label>
         <input type="text" id="cust-name" />
         <label>Address</label>
@@ -457,6 +461,45 @@
       statusEl.classList.remove('accepted','declined');
       statusEl.classList.add('pending');
     }
+
+
+    // -------- Customer dropdown autofill --------
+    (function setupCustomerDropdown() {
+      try {
+        // This key matches your scheduler app (painting_customers)
+        var stored = localStorage.getItem('painting_customers');
+        if (!stored) return;
+
+        var customers = JSON.parse(stored);
+        if (!Array.isArray(customers) || customers.length === 0) return;
+
+        var select = document.getElementById('customer-select');
+        if (!select) return;
+
+        customers.forEach(function(c, idx) {
+          var opt = document.createElement('option');
+          opt.value = idx;
+          opt.textContent = c.name || ('Customer ' + (idx + 1));
+          select.appendChild(opt);
+        });
+
+        select.addEventListener('change', function() {
+          var i = parseInt(this.value, 10);
+          if (isNaN(i)) return;
+          var c = customers[i];
+          if (!c) return;
+
+          // Fill fields – full address goes into line 1, you can tweak manually
+          document.getElementById('cust-name').value = c.name || '';
+          document.getElementById('cust-address1').value = c.address || '';
+          document.getElementById('cust-address2').value = '';
+          document.getElementById('cust-phone').value = c.phone || '';
+          document.getElementById('cust-email').value = c.email || '';
+        });
+      } catch (e) {
+        console && console.error && console.error('Customer dropdown setup failed', e);
+      }
+    })();
 
     // initialize with one empty line
     addLine();
