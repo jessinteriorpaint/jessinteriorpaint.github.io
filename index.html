@@ -395,7 +395,7 @@
             target="_blank"
             class="btn btn-secondary"
           >
-            Open Quote Sheet
+            Open Local Quote Sheet
           </a>
           <div class="small">
             Use this link to build or view quotes, then add the job below once approved.
@@ -561,6 +561,674 @@
   </div>
 
   <script>
+        const PRELOADED_CUSTOMERS = [
+  {
+    "id": "c_or47llwk",
+    "name": "Charlie Heath",
+    "phone": "",
+    "email": "walterblue297@gmail.com",
+    "address": "231 Victory Hwy Mapleville, RI 02839"
+  },
+  {
+    "id": "c_3wwxp2ct",
+    "name": "Christine Raffa",
+    "phone": "(857) 205-2500",
+    "email": "managerraffa@gmail.com",
+    "address": "19 Sharpe Dr. Cranston, RI 02920"
+  },
+  {
+    "id": "c_drw10i28",
+    "name": "CMR ENTERPRISE - Raffa Yoga",
+    "phone": "(857) 205-2500",
+    "email": "raffayoga@yahoo.com",
+    "address": "19 Sharpe Dr. Cranston, RI 02920"
+  },
+  {
+    "id": "c_xp1muyg2",
+    "name": "All Hill",
+    "phone": "",
+    "email": "",
+    "address": "25 Ponderosa Ln Pascoag, RI.02859"
+  },
+  {
+    "id": "c_rwxx4xn4",
+    "name": "Annette Lamoureux",
+    "phone": "",
+    "email": "Nettie2@cox.net",
+    "address": "30 Maple Ave Forestdale, RI 02824"
+  },
+  {
+    "id": "c_ka9n2mcn",
+    "name": "Ann Pemberton",
+    "phone": "",
+    "email": "Ann7836@yahoo.com",
+    "address": "361 East Street Uxbridge, MA 01569"
+  },
+  {
+    "id": "c_wbolulsz",
+    "name": "Barbara & Dennis Kafalas",
+    "phone": "",
+    "email": "bkafalas1@gmail.com",
+    "address": "260 North Shore Drive Glendale, RI 02826"
+  },
+  {
+    "id": "c_k3teeqc7",
+    "name": "Brenda",
+    "phone": "",
+    "email": "Brenda226@aol.com",
+    "address": "44 Windsong Road Cumberland, RI 02864"
+  },
+  {
+    "id": "c_v2y7v7c1",
+    "name": "Brenda Mcmahon",
+    "phone": "",
+    "email": "blmcmahon0@gmail.com",
+    "address": "10 Chiswick Rd Greenville, RI.02828"
+  },
+  {
+    "id": "c_kyuim9b6",
+    "name": "Bruce & Peg Tancrede",
+    "phone": "",
+    "email": "btancrede@verizon.net",
+    "address": "564 Black Hut Rd Glendale, RI. 02826"
+  },
+  {
+    "id": "c_mn76jv2x",
+    "name": "Carol Crowther",
+    "phone": "",
+    "email": "ccrowther1@gmail.com",
+    "address": "17 Sunrise Terrace Chepatchet, RI 02814"
+  },
+  {
+    "id": "c_j7k9p1z0",
+    "name": "Cathy",
+    "phone": "",
+    "email": "goyk4km@yahoo.com",
+    "address": "12 Spruce Brook Rd Scituate RI"
+  },
+  {
+    "id": "c_nst001nw",
+    "name": "Celine Neumiller",
+    "phone": "",
+    "email": "Celineneumiller@gmail.com",
+    "address": "17468 Old Harmony Drive 202 Fort Myers, FL 33908"
+  },
+  {
+    "id": "c_kbqha9ef",
+    "name": "Bob & Jen Shield",
+    "phone": "",
+    "email": "jltsheilds@gmail.com",
+    "address": "33 Douglas Hook Road Chepatchet, RI 02814"
+  },
+  {
+    "id": "c_t8lmvtw5",
+    "name": "Chaz and Beth",
+    "phone": "",
+    "email": "elizabethwhiteoak@yahoo.com",
+    "address": "15 Mill Pond Rd Harrisville, RI. 02830"
+  },
+  {
+    "id": "c_ip0bzoxa",
+    "name": "Christiana Filbert",
+    "phone": "",
+    "email": "cfilbert06@gmail.com",
+    "address": "133 Coloniol Rd Plainfield, CT. 03674"
+  },
+  {
+    "id": "c_l53iy0wz",
+    "name": "Chuck and Lisa Ells",
+    "phone": "",
+    "email": "lisae1015@yahoo.com",
+    "address": "191 Douglas Pike North Smithfield, RI. 02896"
+  },
+  {
+    "id": "c_n1h7sz3k",
+    "name": "Cindy Marchant",
+    "phone": "",
+    "email": "grandma6cam@gmail.com",
+    "address": "7 Penbryn Ave Smithfield, RI 002917"
+  },
+  {
+    "id": "c_bedahpi8",
+    "name": "Dan & Naydeen Kafalas",
+    "phone": "",
+    "email": "Naydeen21@gmail.com",
+    "address": "425 Snake Hill Road Harrisville, RI 02830"
+  },
+  {
+    "id": "c_xfxvmxtg",
+    "name": "Dan Mulligan & Meredith Crawford",
+    "phone": "",
+    "email": "Umfmeredith@gmail.com",
+    "address": "253 North Road Pascoag, RI 02859"
+  },
+  {
+    "id": "c_q6ahf53l",
+    "name": "Darren Derderian",
+    "phone": "401-714-1341",
+    "email": "dbosox@cox.net",
+    "address": "24 Roger Williams Drive Greenville, RI. 02828"
+  },
+  {
+    "id": "c_utwwsm3p",
+    "name": "David & Jessica Thibault",
+    "phone": "",
+    "email": "jltremblay96@gmail.com",
+    "address": "345 Steere Farm Road Harrisville, RI 02830"
+  },
+  {
+    "id": "c_izao955d",
+    "name": "David Grassini",
+    "phone": "",
+    "email": "Grass144@gmail.com",
+    "address": "23 Countryside Lane Scituate, RI 02857"
+  },
+  {
+    "id": "c_azf2ol0g",
+    "name": "David Maggiacomo",
+    "phone": "",
+    "email": "Maggiacomodavid@gmail.com",
+    "address": "27 Cider Lane Greenville, RI 02828"
+  },
+  {
+    "id": "c_mj55fznb",
+    "name": "David Rathbun",
+    "phone": "",
+    "email": "Rathbundavida@gmail.com",
+    "address": "28 Old Hartford Pike North Scituate, RI 02857"
+  },
+  {
+    "id": "c_0lkwv502",
+    "name": "Dawn Carey",
+    "phone": "",
+    "email": "dawncarey24@gmail.com",
+    "address": "220 Main Street Scituate, RI. 02815"
+  },
+  {
+    "id": "c_i3z5b3ge",
+    "name": "Dayna Poloski",
+    "phone": "",
+    "email": "nursedayna1@gmail.com",
+    "address": "18 Sweet Fern Lane Coventry, RI 02816"
+  },
+  {
+    "id": "c_ww4zs3r8",
+    "name": "Doreen Gill",
+    "phone": "",
+    "email": "macmeg03@comcast.net",
+    "address": "45 Chestnut Hill Rd Millville, MA. 01569"
+  },
+  {
+    "id": "c_633vqshm",
+    "name": "Ed and Val",
+    "phone": "401-580-0095",
+    "email": "firewall1e2007@yahoo.com",
+    "address": "28 Windsor Ave Johnston, RI. 02919"
+  },
+  {
+    "id": "c_e9st79wm",
+    "name": "Eugene Martin",
+    "phone": "",
+    "email": "kjay312@gmail.com",
+    "address": "807 Hartford Pike North Scituate, RI.02857"
+  },
+  {
+    "id": "c_jucobb7f",
+    "name": "George Kasper",
+    "phone": "",
+    "email": "Gkaspar@protonmail.com",
+    "address": "289 Staghead Drive Pascagoula, RI 02859"
+  },
+  {
+    "id": "c_50r698ye",
+    "name": "Gerry Zisk",
+    "phone": "",
+    "email": "gwzsr1@hotmail.com",
+    "address": "23 Intervale Road Smithsfield, RI. 02814"
+  },
+  {
+    "id": "c_18kg0vxk",
+    "name": "Gloria Wood",
+    "phone": "",
+    "email": "Gloria13w@yahoo.com",
+    "address": "940 East Avenue Oakland, RI 02858"
+  },
+  {
+    "id": "c_khbtoovs",
+    "name": "Gregg and Julie Parker",
+    "phone": "",
+    "email": "gregg@rapins.com",
+    "address": "53 Eben Chamberlain Rd Whitensville, MA. 01588"
+  },
+  {
+    "id": "c_ajbzt0zp",
+    "name": "Heidi Cardon",
+    "phone": "",
+    "email": "Heidikickboxing@gmail.com",
+    "address": "470 Joslin Road Glendale, RI 02826"
+  },
+  {
+    "id": "c_2qu7g5ic",
+    "name": "Howard Shaw",
+    "phone": "",
+    "email": "hmsprint@yahoo.com",
+    "address": "23 Jennifer Lane N. Smithfield, RI 02896"
+  },
+  {
+    "id": "c_gps415iw",
+    "name": "Janine Rawson",
+    "phone": "",
+    "email": "Joel.rawson@cox.net",
+    "address": "235 Collin’s Taft Road Harrisville, RI 02830"
+  },
+  {
+    "id": "c_etm0gh60",
+    "name": "Jean Fallago",
+    "phone": "",
+    "email": "jfallagoesq@aol.com",
+    "address": "2 Kristen Drive Greenville, RI 02828"
+  },
+  {
+    "id": "c_gzx2yamb",
+    "name": "Jeff Kennedy",
+    "phone": "",
+    "email": "jeffkennedy92@gmail.com",
+    "address": "34 Weymouth Lane East Greenwich, RI 02818"
+  },
+  {
+    "id": "c_y4cdit0p",
+    "name": "Jenn and Collin Tobin",
+    "phone": "",
+    "email": "jenniferheon@yahoo.com",
+    "address": "800 Knibb Rd Pascoag, RI. 02859"
+  },
+  {
+    "id": "c_9o0zyie0",
+    "name": "Jennifer Corriveau",
+    "phone": "",
+    "email": "jlriveau@yahoo.com",
+    "address": ""
+  },
+  {
+    "id": "c_jnlx1f0b",
+    "name": "Jesse Rathier",
+    "phone": "",
+    "email": "JkRathier@gmail.com",
+    "address": "650 Black Hut Road Glendale, RI 02826"
+  },
+  {
+    "id": "c_lmc81ftt",
+    "name": "Joe Cardello",
+    "phone": "",
+    "email": "jc3mav@verizon.net",
+    "address": "174 Woonsocket Hill Rd North Smithfield, RI. 02824"
+  },
+  {
+    "id": "c_rctt3uk1",
+    "name": "Joe Smith",
+    "phone": "",
+    "email": "1jsmith1@gmail.com",
+    "address": "715 Reservoir Road Pascoag, RI 02859"
+  },
+  {
+    "id": "c_az9jx41o",
+    "name": "John Fontaine",
+    "phone": "",
+    "email": "iforani@cox.net",
+    "address": "34 Inman Road Harrisville, RI 02830"
+  },
+  {
+    "id": "c_0cpw19p5",
+    "name": "Judy Diotelevi",
+    "phone": "",
+    "email": "jld53@comcast.net",
+    "address": "53 Bowdoin Drive Milford, MA 01757"
+  },
+  {
+    "id": "c_w6pa53da",
+    "name": "Julie Twinings",
+    "phone": "",
+    "email": "Jultwin88@gmail.com",
+    "address": "309 Stillwater Road Smithfield, RI 02917"
+  },
+  {
+    "id": "c_ddrxidx9",
+    "name": "Karen Betrand",
+    "phone": "401-632-7075",
+    "email": "Karenbertrand4@gmail.com",
+    "address": "1295 Jackson Schoolhouse Road Pascoag, RI 02859"
+  },
+  {
+    "id": "c_omxeaj0b",
+    "name": "Karen Gowdey",
+    "phone": "",
+    "email": "karen.gowdey@verizon.net",
+    "address": "17 Stonebridge Lane West Greenwich, RI 02817"
+  },
+  {
+    "id": "c_utwx9m4e",
+    "name": "Kathy and Matt Arnold",
+    "phone": "401-392-1887",
+    "email": "katmatt099@hotmail.com",
+    "address": "118 Johnson Rd Foster, RI. 02825"
+  },
+  {
+    "id": "c_q9c0cy82",
+    "name": "Katie Parker",
+    "phone": "",
+    "email": "kparker12@gmail.com",
+    "address": ""
+  },
+  {
+    "id": "c_me2hgdo4",
+    "name": "Ken Stafford",
+    "phone": "",
+    "email": "kstafford2445@gmail.com",
+    "address": "18 Robin Vale Drive North Scituate, RI 02857"
+  },
+  {
+    "id": "c_otmdpdzz",
+    "name": "Kerri Jolicoeur",
+    "phone": "",
+    "email": "kerjol25@hotmail.com",
+    "address": "17 Norwood Road N. Smithfield, RI 02896"
+  },
+  {
+    "id": "c_szyoprrw",
+    "name": "Kim Hannigan",
+    "phone": "",
+    "email": "phannigan@johare.com",
+    "address": "117 Mann School Street Smithfield, RI 02917"
+  },
+  {
+    "id": "c_hqnhdo4u",
+    "name": "Kim Leahy",
+    "phone": "Rfkeene6@gmai.com",
+    "email": "kkeene1215@gmail.com",
+    "address": "120 Greene Street N. Smithfield, RI 02896"
+  },
+  {
+    "id": "c_ux5c22aj",
+    "name": "Kindra & Jeff Higgins",
+    "phone": "",
+    "email": "Fortsonhiggins@gmail.com",
+    "address": "4 Barway Lane Cumberland, RI 02864"
+  },
+  {
+    "id": "c_dpuqg7xh",
+    "name": "Kristine St. Pierre",
+    "phone": "",
+    "email": "Kristinebs10@gmail.com",
+    "address": "90 Maureen Circle Mapleville, RI 02839"
+  },
+  {
+    "id": "c_qf9n8ssi",
+    "name": "Kyla Kennedy",
+    "phone": "",
+    "email": "Kylakandrewsl@gmail.com",
+    "address": ""
+  },
+  {
+    "id": "c_8n7biiec",
+    "name": "Kyle Bolton",
+    "phone": "",
+    "email": "Kyle.Bolton@gmail.com",
+    "address": "25 Youngs Drive Glendale, RI 02826"
+  },
+  {
+    "id": "c_kin491wb",
+    "name": "Larry Altman",
+    "phone": "",
+    "email": "sciizzo@msn.com",
+    "address": "6365 Chestnut Street"
+  },
+  {
+    "id": "c_971awvin",
+    "name": "Laura Smith",
+    "phone": "",
+    "email": "lauralynne.bouliane@gmail.com",
+    "address": "1 Randall Street Smithfield, RI 02828"
+  },
+  {
+    "id": "c_pb2ky99b",
+    "name": "Laurea DeCiantis",
+    "phone": "",
+    "email": "ledink1@aol.com",
+    "address": "392 Rockland Road North Scituate, RI 02857"
+  },
+  {
+    "id": "c_jypgumr8",
+    "name": "Laurie Durfee",
+    "phone": "",
+    "email": "Laurieddg@gmail.com",
+    "address": "720 Putnam Pike Greenville, RI 02828"
+  },
+  {
+    "id": "c_jca3zjvq",
+    "name": "Loreen Robbins",
+    "phone": "",
+    "email": "loreenrobbins1@gmail.com",
+    "address": "11 Teaberry Lane Chepatchet, RI 02830"
+  },
+  {
+    "id": "c_fuitjbch",
+    "name": "Lynne Bouliane",
+    "phone": "",
+    "email": "Lynne.Bouliane@gmail.com",
+    "address": "84 Surrey Lane Woonsocket, RI 02895"
+  },
+  {
+    "id": "c_0ynf25ey",
+    "name": "Marlene",
+    "phone": "",
+    "email": "holdup279777@gmail.com",
+    "address": "24 Burgess Rd Foster, RI. 02825"
+  },
+  {
+    "id": "c_byke4kos",
+    "name": "Martha Brillon",
+    "phone": "",
+    "email": "mcbonwinsor@aol.com",
+    "address": "28 Windsor Road Foster, RI 02825"
+  },
+  {
+    "id": "c_wytlyoea",
+    "name": "Matthew & Shiloh Tweedy",
+    "phone": "",
+    "email": "mbtweedy@gmail.com",
+    "address": "8 Totem Pole Trail Smithfield, RI 02917"
+  },
+  {
+    "id": "c_d1dwafr3",
+    "name": "Melinda Petronelli",
+    "phone": "",
+    "email": "sandydogis11@gmail.com",
+    "address": "2 Giovanni Court Coventry, RI 02816"
+  },
+  {
+    "id": "c_o6s2296l",
+    "name": "Michele Diamond",
+    "phone": "",
+    "email": "michelediamond@cox.net",
+    "address": "1520 Chopmist Hill Road N. Scituate, RI"
+  },
+  {
+    "id": "c_3qi2rjoc",
+    "name": "Michele Oram - Michele Oram Interiors",
+    "phone": "",
+    "email": "moram11270@yahoo.com",
+    "address": "901 Roundtop Rd Harrisville, RI."
+  },
+  {
+    "id": "c_lsdtx2al",
+    "name": "Michelle Carrier",
+    "phone": "",
+    "email": "mcarrier5863@gmail.com",
+    "address": "24 Douglas Circle Greenville, RI. 02828"
+  },
+  {
+    "id": "c_ij6ax73p",
+    "name": "Michelle Deschamps",
+    "phone": "",
+    "email": "Mdeschamps.leeway@gmail.com",
+    "address": ""
+  },
+  {
+    "id": "c_01gnis77",
+    "name": "Mike Ciummo",
+    "phone": "",
+    "email": "Chumshockey@gmail.com",
+    "address": "77 Cove Road Glendale, RI 02826"
+  },
+  {
+    "id": "c_00c29d5f",
+    "name": "Mike Greasley",
+    "phone": "",
+    "email": "Mike@gimpm.com",
+    "address": "137 Sweet Ave Pawtucket, RI 02861"
+  },
+  {
+    "id": "c_ev0ag4py",
+    "name": "Nelson & Danielle DaSilva",
+    "phone": "",
+    "email": "DaSilva401@gmail.com",
+    "address": "805 Spring Lake Road Glendale, RI 02826"
+  },
+  {
+    "id": "c_nwi4u54g",
+    "name": "Nikki Carrier",
+    "phone": "",
+    "email": "n1kk1arr1er@gmail.com",
+    "address": "24 Douglas Circle Greenville, RI. 02828"
+  },
+  {
+    "id": "c_gadmhyx8",
+    "name": "North Smithfield Heritage Assn Memorial Town Building",
+    "phone": "",
+    "email": "nsha@nsheritageassn.org",
+    "address": "1 Main Street North Smithfield, RI 02896"
+  },
+  {
+    "id": "c_j278awkv",
+    "name": "Patrick Hannigan",
+    "phone": "",
+    "email": "phannigan@johare.com",
+    "address": "9 Aspen Ln Smithfield, RI. 02828"
+  },
+  {
+    "id": "c_nyr5kl5y",
+    "name": "Patty and Ed Duffy",
+    "phone": "401-413-1601",
+    "email": "Ed@Alltownri.com",
+    "address": "182 Austin Ave Chepachet, RI 02814"
+  },
+  {
+    "id": "c_gccqbkml",
+    "name": "Paula",
+    "phone": "",
+    "email": "",
+    "address": "7 Appleseed Drive Greenville, RI 02828"
+  },
+  {
+    "id": "c_ml3c6obv",
+    "name": "Paula Fontaine",
+    "phone": "",
+    "email": "Paulafontaine@cox.net",
+    "address": "34 Inman Road Burrillville, RI 02826"
+  },
+  {
+    "id": "c_ni429191",
+    "name": "Paula Sutcliffe",
+    "phone": "",
+    "email": "Psutcliffe23@gmail.com",
+    "address": "7 Appleseed Drive Greenville. RI 02828"
+  },
+  {
+    "id": "c_hs5jy5qh",
+    "name": "Robert Morse",
+    "phone": "508-962-1570",
+    "email": "bmorse65@comcast.net",
+    "address": "2 St Paul Street Blackstone, MA. 01504"
+  },
+  {
+    "id": "c_r79kl81k",
+    "name": "Ryan Giblin",
+    "phone": "",
+    "email": "rygiblin7@gmail.com",
+    "address": "16 Water Street Johnston, RI 02911"
+  },
+  {
+    "id": "c_nrz6dobz",
+    "name": "Sandra",
+    "phone": "401-742-6505",
+    "email": "jpursche@verizon.net",
+    "address": "125 Maureen Circle Mapleville, RI. 02839"
+  },
+  {
+    "id": "c_9qz9xbae",
+    "name": "Stephanie Liston",
+    "phone": "",
+    "email": "sbliston@tlainc.net",
+    "address": "4 Orchard Meadows Drive Smithfield, RI 02917"
+  },
+  {
+    "id": "c_msfxo150",
+    "name": "Steve Kitson",
+    "phone": "",
+    "email": "skitson50@gmail.com",
+    "address": "62 Eastford Road Eastford, CT 06242"
+  },
+  {
+    "id": "c_x6u0mi7z",
+    "name": "Sue Cardon",
+    "phone": "",
+    "email": "bull66sc@aol.com",
+    "address": "PO BOX 799 Glendale, RI 02826"
+  },
+  {
+    "id": "c_i1yvyu5f",
+    "name": "Theresa Garcia",
+    "phone": "",
+    "email": "tgarcia1@verizon.net",
+    "address": "60 Watterman Lake Rd Chepachet RI. 02814"
+  },
+  {
+    "id": "c_0ljui2na",
+    "name": "Tim Souza",
+    "phone": "",
+    "email": "fivebays825@yahoo.com",
+    "address": "22 Spinnaker St Sandwich, MA. 02563"
+  },
+  {
+    "id": "c_s33i1sdz",
+    "name": "Todd Dipietro",
+    "phone": "",
+    "email": "Todddipietro@yahoo.com",
+    "address": "900 Sherman Farm Road Harrisville, RI 02830"
+  },
+  {
+    "id": "c_utzhotfv",
+    "name": "Todd Novitsky",
+    "phone": "763-300-0489",
+    "email": "tnvtsky@gmail.com",
+    "address": "5453 Whispering Willow Way Fort Myers, FL. 33908"
+  },
+  {
+    "id": "c_zyz54jie",
+    "name": "Tony and Karen Orlando",
+    "phone": "",
+    "email": "Orlandoiko@gmail.com",
+    "address": "7811 Regal Heron Cr. #206 Naples, FL 34104"
+  },
+  {
+    "id": "c_v1niz5fj",
+    "name": "Trish Sing",
+    "phone": "",
+    "email": "TrishSing@gmail.com",
+    "address": "17476 Old Harmony Drive #202 Fort Myers, FL 33908"
+  }
+];
+
     // ---- Data & Storage ----
     const STORAGE_KEYS = {
       CUSTOMERS: 'painting_customers',
@@ -581,8 +1249,12 @@
         customers = JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOMERS)) || [];
         jobs = JSON.parse(localStorage.getItem(STORAGE_KEYS.JOBS)) || [];
         painters = JSON.parse(localStorage.getItem(STORAGE_KEYS.PAINTERS)) || [];
+
+        if (!customers || customers.length === 0) {
+          customers = PRELOADED_CUSTOMERS.slice();
+        }
       } catch (e) {
-        customers = [];
+        customers = PRELOADED_CUSTOMERS.slice();
         jobs = [];
         painters = [];
       }
