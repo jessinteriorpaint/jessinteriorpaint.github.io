@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Painting Business Scheduler</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: #f4f4f7;
+      color: #111827;
+      padding: 16px;
+    }
+
+    h1, h2, h3 {
+      font-weight: 600;
+    }
+
+    .app-shell {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .header-title {
+      font-size: 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .layout {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media (min-width: 900px) {
+      .layout {
+        flex-direction: row;
+        align-items: flex-start;
+      }
+    }
+
+    .column {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .column.left {
+      flex: 0 0 380px;
+    }
+
+    .column.right {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .column h2 {
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+    }
+
+    .section {
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      color: #4b5563;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 0.8rem;
+      color: #4b5563;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    input, select, textarea {
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.4);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      color: #ffffff;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .btn-small {
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      margin-top: 0;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .pill {
+      font-size: 0.8rem;
+      border-radius: 999px;
+      padding: 4px 10px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      cursor: pointer;
+    }
+
+    .pill.active {
+      background: #111827;
+      color: #f9fafb;
+      border-color: #111827;
+    }
+
+    .jobs-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .job-card {
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      padding: 10px 12px;
+      background: #f9fafb;
+    }
+
+    .job-conflict {
+      border-color: #f97373;
+      background: #fef2f2;
+    }
+
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .job-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .job-meta {
+      font-size: 0.78rem;
+      color: #4b5563;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .job-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .status-select {
+      font-size: 0.78rem;
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+
+    .small {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+
+    .empty-state {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      margin-top: 4px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .chip-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #10b981;
+    }
+
+    .status-scheduled   { background: #dbeafe; color: #1d4ed8; }
+    .status-inprogress  { background: #fef3c7; color: #b45309; }
+    .status-completed   { background: #dcfce7; color: #166534; }
+    .status-cancelled   { background: #fee2e2; color: #b91c1c; }
+
+    .status-scheduled .chip-dot   { background: #2563eb; }
+    .status-inprogress .chip-dot  { background: #f59e0b; }
+    .status-completed .chip-dot   { background: #22c55e; }
+    .status-cancelled .chip-dot   { background: #ef4444; }
+
+    .notes {
+      font-size: 0.78rem;
+      margin-top: 4px;
+      color: #4b5563;
+      white-space: pre-wrap;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar input {
+      max-width: 220px;
+    }
+
+    .tagline {
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+
+    .painter-list, .customer-list {
+      font-size: 0.8rem;
+      color: #4b5563;
+      margin-top: 6px;
+    }
+
+    .customer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 0;
+      border-bottom: 1px dashed #e5e7eb;
+    }
+
+    .customer-row:last-child {
+      border-bottom: none;
+    }
+
+    .customer-main {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .customer-name {
+      font-weight: 500;
+    }
+
+    .customer-meta {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+
+    .customer-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .conflict-label {
+      font-size: 0.75rem;
+      color: #b91c1c;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="header">
+      <div>
+        <div class="header-title">
+          🎨 Painting Schedule
+          <span class="badge">Local Only · Offline</span>
+        </div>
+        <div class="tagline">Track customers, painters & jobs for your painting business.</div>
+      </div>
+      <div class="small" id="todayLabel"></div>
+    </header>
+
+    <main class="layout">
+      <!-- LEFT COLUMN – FORMS -->
+      <section class="column left">
+        <h2>Add & Manage</h2>
+
+        <!-- Quote link -->
+        <div class="section">
+          <div class="section-title">Quote Tool</div>
+          <a
+            href="quote_sheet_with_accept_decline_pending_buttons.html"
+            target="_blank"
+            class="btn btn-secondary"
+          >
+            Open Quote Sheet
+          </a>
+          <div class="small">
+            Use this link to build or view quotes, then add the job below once approved.
+          </div>
+        </div>
+
+        <!-- Painters -->
+        <div class="section">
+          <div class="section-title">Painters (1–2 or more)</div>
+          <form id="painterForm">
+            <label>
+              Painter name
+              <input type="text" id="painterName" placeholder="e.g. Mike" required />
+            </label>
+            <button type="submit" class="btn btn-primary">＋ Add Painter</button>
+          </form>
+          <div class="small">
+            Add your painters here. Use the button below to see or review the list.
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-secondary"
+            id="togglePainterListBtn"
+            style="margin-top:8px;"
+          >
+            Show painter list
+          </button>
+
+          <div
+            class="painter-list"
+            id="painterListWrapper"
+            style="display:none; margin-top:8px;"
+          >
+            <div id="painterList"></div>
+          </div>
+        </div>
+
+        <!-- Customers -->
+        <div class="section">
+          <div class="section-title">Customers</div>
+          <form id="customerForm">
+            <label>
+              Name
+              <input type="text" id="customerName" required />
+            </label>
+            <label>
+              Phone
+              <input type="tel" id="customerPhone" placeholder="555-123-4567" />
+            </label>
+            <label>
+              Email
+              <input type="email" id="customerEmail" />
+            </label>
+            <label>
+              Address
+              <input type="text" id="customerAddress" placeholder="Street, City" />
+            </label>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <button type="submit" class="btn btn-primary" id="customerSubmitBtn">
+                ＋ Save Customer
+              </button>
+              <button type="button" class="btn btn-secondary" id="customerCancelEditBtn" style="display:none;">
+                Cancel Edit
+              </button>
+            </div>
+            <div class="small" id="customerFormHint">
+              Add a new customer. To edit or delete, use the button below.
+            </div>
+          </form>
+
+          <!-- Customer manage toggle + list -->
+          <button type="button" class="btn btn-secondary" id="toggleCustomerManageBtn" style="margin-top:8px;">
+            Manage existing customers
+          </button>
+
+          <div class="customer-list" id="customerListWrapper" style="display:none; margin-top:8px;">
+            <div class="small" style="margin-bottom:4px;">
+              Click “Edit” or “Delete” on a customer below.
+            </div>
+            <div id="customerList"></div>
+          </div>
+        </div>
+
+        <!-- Jobs -->
+        <div class="section">
+          <div class="section-title">New Job</div>
+          <form id="jobForm">
+            <label>
+              Customer
+              <select id="jobCustomer" required>
+                <option value="">Select a customer…</option>
+              </select>
+            </label>
+            <label>
+              Date
+              <input type="date" id="jobDate" required />
+            </label>
+            <label>
+              Start time
+              <input type="time" id="jobTime" required />
+            </label>
+            <label>
+              Duration (hours)
+              <input type="number" id="jobDuration" min="1" step="0.5" value="4" />
+            </label>
+            <label>
+              Price ($)
+              <input type="number" id="jobPrice" min="0" step="1" />
+            </label>
+            <label>
+              Assigned painter(s)
+              <select id="jobPainters" multiple size="2">
+                <!-- filled dynamically -->
+              </select>
+              <span class="small">Tip: hold Ctrl (Windows) or Cmd (Mac) to select 2 painters.</span>
+            </label>
+            <label>
+              Status
+              <select id="jobStatus">
+                <option value="Scheduled">Scheduled</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </label>
+            <label>
+              Notes
+              <textarea id="jobNotes" placeholder="Room count, colors, interior/exterior, access notes…"></textarea>
+            </label>
+            <button type="submit" class="btn btn-primary">＋ Add Job</button>
+          </form>
+        </div>
+
+        <!-- Stats -->
+        <div class="section">
+          <div class="section-title">Quick Stats</div>
+          <div class="small" id="stats"></div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN – JOB VIEWS -->
+      <section class="column right">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <h2>Schedule</h2>
+            <select id="painterFilter">
+              <option value="all">All painters</option>
+            </select>
+          </div>
+          <input type="search" id="searchInput" placeholder="Search by customer, address, notes…" />
+        </div>
+
+        <div class="pill-row" id="viewPills">
+          <button class="pill active" data-view="today">Today</button>
+          <button class="pill" data-view="week">Next 7 Days</button>
+          <button class="pill" data-view="all">All Jobs</button>
+        </div>
+
+        <div id="jobsContainer" class="jobs-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // ---- Data & Storage ----
+    const STORAGE_KEYS = {
+      CUSTOMERS: 'painting_customers',
+      JOBS: 'painting_jobs',
+      PAINTERS: 'painting_painters'
+    };
+
+    let customers = [];
+    let jobs = [];
+    let painters = [];
+    let currentView = 'today';
+    let currentSearch = '';
+    let currentPainterFilter = 'all';
+    let editingCustomerId = null;
+
+    function loadData() {
+      try {
+        customers = JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOMERS)) || [];
+        jobs = JSON.parse(localStorage.getItem(STORAGE_KEYS.JOBS)) || [];
+        painters = JSON.parse(localStorage.getItem(STORAGE_KEYS.PAINTERS)) || [];
+      } catch (e) {
+        customers = [];
+        jobs = [];
+        painters = [];
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(customers));
+      localStorage.setItem(STORAGE_KEYS.JOBS, JSON.stringify(jobs));
+      localStorage.setItem(STORAGE_KEYS.PAINTERS, JSON.stringify(painters));
+    }
+
+    // ---- Helpers ----
+    function formatCurrency(value) {
+      const n = Number(value || 0);
+      if (Number.isNaN(n)) return '$0';
+      return '$' + n.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function getTodayISO() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function isToday(dateStr) {
+      return dateStr === getTodayISO();
+    }
+
+    function isWithinNext7Days(dateStr) {
+      const today = new Date(getTodayISO());
+      const d = new Date(dateStr);
+      const diffMs = d - today;
+      const diffDays = diffMs / (1000 * 60 * 60 * 24);
+      return diffDays >= 0 && diffDays < 7;
+    }
+
+    function getCustomerById(id) {
+      return customers.find(c => c.id === id);
+    }
+
+    function getPainterById(id) {
+      return painters.find(p => p.id === id);
+    }
+
+    function generateId(prefix) {
+      return prefix + '_' + Math.random().toString(36).slice(2, 10);
+    }
+
+    function statusClass(status) {
+      switch ((status || '').toLowerCase()) {
+        case 'scheduled': return 'status-scheduled';
+        case 'in progress': return 'status-inprogress';
+        case 'completed': return 'status-completed';
+        case 'cancelled': return 'status-cancelled';
+        default: return '';
+      }
+    }
+
+    function jobTimeRange(job) {
+      const time = job.time || '00:00';
+      const [h, m] = time.split(':').map(Number);
+      const startMinutes = (h || 0) * 60 + (m || 0);
+      const durationMinutes = (Number(job.duration) || 1) * 60; // min 1h for overlap checks
+      const endMinutes = startMinutes + durationMinutes;
+      return { startMinutes, endMinutes };
+    }
+
+    // Returns a Set of job IDs that are double-booked for at least one painter
+    function computeConflicts() {
+      const conflicts = new Set();
+      const groups = {};
+
+      jobs.forEach(job => {
+        const paintersForJob = job.painterIds || [];
+        paintersForJob.forEach(pid => {
+          const key = pid + '|' + job.date;
+          if (!groups[key]) groups[key] = [];
+          groups[key].push(job);
+        });
+      });
+
+      Object.values(groups).forEach(group => {
+        if (group.length < 2) return;
+        group.sort((a, b) => {
+          const ta = jobTimeRange(a).startMinutes;
+          const tb = jobTimeRange(b).startMinutes;
+          return ta - tb;
+        });
+
+        for (let i = 0; i < group.length - 1; i++) {
+          const a = group[i];
+          const b = group[i + 1];
+          const ra = jobTimeRange(a);
+          const rb = jobTimeRange(b);
+          if (rb.startMinutes < ra.endMinutes) {
+            conflicts.add(a.id);
+            conflicts.add(b.id);
+          }
+        }
+      });
+
+      return conflicts;
+    }
+
+    // ---- Renderers ----
+    function renderTodayLabel() {
+      const el = document.getElementById('todayLabel');
+      const d = new Date();
+      const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+      el.textContent = d.toLocaleDateString(undefined, options);
+    }
+
+    function renderPainterOptions() {
+      const painterSelect = document.getElementById('jobPainters');
+      const filterSelect = document.getElementById('painterFilter');
+
+      const currentFilter = filterSelect.value;
+
+      painterSelect.innerHTML = '';
+      filterSelect.innerHTML = '<option value="all">All painters</option>';
+
+      painters
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .forEach(p => {
+          const opt1 = document.createElement('option');
+          opt1.value = p.id;
+          opt1.textContent = p.name;
+          painterSelect.appendChild(opt1);
+
+          const opt2 = document.createElement('option');
+          opt2.value = p.id;
+          opt2.textContent = p.name;
+          filterSelect.appendChild(opt2);
+        });
+
+      if (currentFilter && [...filterSelect.options].some(o => o.value === currentFilter)) {
+        filterSelect.value = currentFilter;
+      } else {
+        filterSelect.value = 'all';
+        currentPainterFilter = 'all';
+      }
+
+      const listEl = document.getElementById('painterList');
+      if (painters.length === 0) {
+        listEl.textContent = 'No painters added yet.';
+      } else {
+        listEl.innerHTML =
+          'Current painters: ' +
+          painters
+            .slice()
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map(p => `<span>• ${p.name}</span>`)
+            .join(' ');
+      }
+    }
+
+    function renderCustomerOptions() {
+      const select = document.getElementById('jobCustomer');
+      const currentValue = select.value;
+      select.innerHTML = '<option value="">Select a customer…</option>';
+      customers
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.name;
+          select.appendChild(opt);
+        });
+      if (currentValue) {
+        select.value = currentValue;
+      }
+    }
+
+    function renderCustomerList() {
+      const listEl = document.getElementById('customerList');
+      if (!listEl) return;
+
+      if (customers.length === 0) {
+        listEl.textContent = 'No customers yet. Add your first customer above.';
+        return;
+      }
+
+      listEl.innerHTML = '';
+      customers
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .forEach(c => {
+          const row = document.createElement('div');
+          row.className = 'customer-row';
+
+          const main = document.createElement('div');
+          main.className = 'customer-main';
+
+          const nameEl = document.createElement('div');
+          nameEl.className = 'customer-name';
+          nameEl.textContent = c.name;
+
+          const meta = document.createElement('div');
+          meta.className = 'customer-meta';
+          const parts = [];
+          if (c.phone) parts.push(c.phone);
+          if (c.email) parts.push(c.email);
+          if (c.address) parts.push(c.address);
+          meta.textContent = parts.join(' · ');
+
+          main.appendChild(nameEl);
+          if (parts.length) main.appendChild(meta);
+
+          const actions = document.createElement('div');
+          actions.className = 'customer-actions';
+
+          const editBtn = document.createElement('button');
+          editBtn.type = 'button';
+          editBtn.className = 'btn btn-secondary btn-small';
+          editBtn.textContent = 'Edit';
+          editBtn.addEventListener('click', () => {
+            startEditingCustomer(c.id);
+          });
+
+          const deleteBtn = document.createElement('button');
+          deleteBtn.type = 'button';
+          deleteBtn.className = 'btn btn-danger btn-small';
+          deleteBtn.textContent = 'Delete';
+          deleteBtn.addEventListener('click', () => {
+            deleteCustomer(c.id);
+          });
+
+          actions.appendChild(editBtn);
+          actions.appendChild(deleteBtn);
+
+          row.appendChild(main);
+          row.appendChild(actions);
+
+          listEl.appendChild(row);
+        });
+    }
+
+    function renderStats() {
+      const statsEl = document.getElementById('stats');
+      const totalJobs = jobs.length;
+      const openJobs = jobs.filter(j => j.status !== 'Completed' && j.status !== 'Cancelled').length;
+      const todayJobs = jobs.filter(j => isToday(j.date)).length;
+      const totalRevenue = jobs
+        .filter(j => j.status === 'Completed')
+        .reduce((sum, j) => sum + (Number(j.price) || 0), 0);
+
+      statsEl.innerHTML = `
+        Painters: <strong>${painters.length}</strong><br/>
+        Customers: <strong>${customers.length}</strong><br/>
+        Jobs: <strong>${totalJobs}</strong> · Open: <strong>${openJobs}</strong><br/>
+        Jobs today: <strong>${todayJobs}</strong><br/>
+        Completed revenue: <strong>${formatCurrency(totalRevenue)}</strong>
+      `;
+    }
+
+    function filteredJobs() {
+      let list = jobs.slice();
+
+      // View filter
+      if (currentView === 'today') {
+        list = list.filter(j => isToday(j.date));
+      } else if (currentView === 'week') {
+        list = list.filter(j => isWithinNext7Days(j.date));
+      }
+
+      // Painter filter
+      if (currentPainterFilter !== 'all') {
+        list = list.filter(j => (j.painterIds || []).includes(currentPainterFilter));
+      }
+
+      // Search filter
+      if (currentSearch.trim()) {
+        const q = currentSearch.toLowerCase();
+        list = list.filter(j => {
+          const customer = getCustomerById(j.customerId);
+          const customerName = customer ? customer.name.toLowerCase() : '';
+          const address = customer ? (customer.address || '').toLowerCase() : '';
+          const notes = (j.notes || '').toLowerCase();
+          const paintersNames = (j.painterIds || [])
+            .map(id => {
+              const p = getPainterById(id);
+              return p ? p.name.toLowerCase() : '';
+            })
+            .join(' ');
+          return (
+            customerName.includes(q) ||
+            address.includes(q) ||
+            notes.includes(q) ||
+            paintersNames.includes(q)
+          );
+        });
+      }
+
+      // Sort by date then time
+      list.sort((a, b) => {
+        if (a.date === b.date) {
+          return (a.time || '').localeCompare(b.time || '');
+        }
+        return a.date.localeCompare(b.date);
+      });
+
+      return list;
+    }
+
+    function renderViewPills() {
+      const pills = document.querySelectorAll('#viewPills .pill');
+      pills.forEach(pill => {
+        pill.classList.toggle('active', pill.dataset.view === currentView);
+      });
+    }
+
+    function renderJobs() {
+      const container = document.getElementById('jobsContainer');
+      container.innerHTML = '';
+
+      const list = filteredJobs();
+      const conflicts = computeConflicts();
+
+      if (list.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.textContent = 'No jobs in this view yet.';
+        container.appendChild(empty);
+        return;
+      }
+
+      list.forEach(job => {
+        const customer = getCustomerById(job.customerId);
+        const card = document.createElement('div');
+        card.className = 'job-card';
+        const isConflict = conflicts.has(job.id);
+        if (isConflict) card.classList.add('job-conflict');
+
+        const header = document.createElement('div');
+        header.className = 'job-header';
+
+        const title = document.createElement('div');
+        title.className = 'job-title';
+        title.textContent = customer ? customer.name : 'Unknown customer';
+
+        const statusChip = document.createElement('div');
+        const statusCls = statusClass(job.status);
+        statusChip.className = `chip ${statusCls}`;
+        statusChip.innerHTML = `
+          <span class="chip-dot"></span>
+          <span>${job.status || 'Scheduled'}</span>
+        `;
+
+        header.appendChild(title);
+        header.appendChild(statusChip);
+
+        const meta = document.createElement('div');
+        meta.className = 'job-meta';
+        const dateLabel = new Date(job.date + 'T00:00:00');
+        const dateFormatted = dateLabel.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+
+        // Painters text
+        let paintersText = '';
+        if (job.painterIds && job.painterIds.length > 0) {
+          const names = job.painterIds
+            .map(id => {
+              const p = getPainterById(id);
+              return p ? p.name : null;
+            })
+            .filter(Boolean);
+          if (names.length > 0) {
+            paintersText = `<span>👷 ${names.join(', ')}</span>`;
+          }
+        }
+
+        meta.innerHTML = `
+          <span>📅 ${dateFormatted}</span>
+          <span>⏰ ${job.time || '--:--'} · ${job.duration || 0}h</span>
+          <span>💲 ${formatCurrency(job.price)}</span>
+          ${customer && customer.address ? `<span>📍 ${customer.address}</span>` : ''}
+          ${paintersText}
+        `;
+
+        const notes = document.createElement('div');
+        notes.className = 'notes';
+        if (job.notes) {
+          notes.textContent = job.notes;
+        }
+
+        const footer = document.createElement('div');
+        footer.className = 'job-footer';
+
+        const statusLabel = document.createElement('label');
+        statusLabel.className = 'small';
+        statusLabel.innerHTML = `
+          Status<br/>
+          <select class="status-select" data-job-id="${job.id}">
+            <option value="Scheduled">Scheduled</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        `;
+
+        const select = statusLabel.querySelector('select');
+        select.value = job.status || 'Scheduled';
+
+        const infoWrapper = document.createElement('div');
+        infoWrapper.style.textAlign = 'right';
+
+        const smallInfo = document.createElement('div');
+        smallInfo.className = 'small';
+        smallInfo.textContent = `Job ID: ${job.id.slice(0, 8)}…`;
+
+        infoWrapper.appendChild(smallInfo);
+
+        if (isConflict) {
+          const conflictLabel = document.createElement('div');
+          conflictLabel.className = 'conflict-label';
+          conflictLabel.innerHTML = `⚠ Double-booked painter`;
+          infoWrapper.appendChild(conflictLabel);
+        }
+
+        footer.appendChild(statusLabel);
+        footer.appendChild(infoWrapper);
+
+        card.appendChild(header);
+        card.appendChild(meta);
+        if (job.notes) card.appendChild(notes);
+        card.appendChild(footer);
+
+        container.appendChild(card);
+      });
+
+      // Attach change listeners for status selects
+      container.querySelectorAll('.status-select').forEach(select => {
+        select.addEventListener('change', (e) => {
+          const jobId = e.target.getAttribute('data-job-id');
+          const job = jobs.find(j => j.id === jobId);
+          if (job) {
+            job.status = e.target.value;
+            saveData();
+            renderStats();
+            renderJobs(); // re-render to refresh chip styling & conflicts
+          }
+        });
+      });
+    }
+
+    // ---- Customer edit/delete logic ----
+    function startEditingCustomer(id) {
+      const customer = customers.find(c => c.id === id);
+      if (!customer) return;
+
+      editingCustomerId = id;
+      document.getElementById('customerName').value = customer.name || '';
+      document.getElementById('customerPhone').value = customer.phone || '';
+      document.getElementById('customerEmail').value = customer.email || '';
+      document.getElementById('customerAddress').value = customer.address || '';
+
+      document.getElementById('customerSubmitBtn').textContent = '✔ Update Customer';
+      document.getElementById('customerCancelEditBtn').style.display = 'inline-flex';
+      document.getElementById('customerFormHint').textContent =
+        'Editing customer. Click “Update Customer” to save or “Cancel Edit” to go back.';
+    }
+
+    function resetCustomerForm() {
+      const form = document.getElementById('customerForm');
+      form.reset();
+      editingCustomerId = null;
+      document.getElementById('customerSubmitBtn').textContent = '＋ Save Customer';
+      document.getElementById('customerCancelEditBtn').style.display = 'none';
+      document.getElementById('customerFormHint').textContent =
+        'Add a new customer. To edit or delete, use the button below.';
+    }
+
+    function deleteCustomer(id) {
+      const customer = customers.find(c => c.id === id);
+      if (!customer) return;
+
+      const hasJobs = jobs.some(j => j.customerId === id);
+      let message = `Delete customer "${customer.name}"?`;
+      if (hasJobs) {
+        message += '\n\nThey are attached to existing jobs. The jobs will remain, but show as “Unknown customer.”';
+      }
+
+      if (!confirm(message)) return;
+
+      customers = customers.filter(c => c.id !== id);
+
+      // For existing jobs, keep them but clear customerId if matched
+      jobs = jobs.map(j => (j.customerId === id ? { ...j, customerId: null } : j));
+
+      saveData();
+      renderCustomerOptions();
+      renderCustomerList();
+      renderStats();
+      renderJobs();
+
+      if (editingCustomerId === id) {
+        resetCustomerForm();
+      }
+    }
+
+    // ---- Event Handlers ----
+    function setupForms() {
+      const painterForm = document.getElementById('painterForm');
+      painterForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('painterName').value.trim();
+        if (!name) return;
+
+        const painter = {
+          id: generateId('p'),
+          name
+        };
+
+        painters.push(painter);
+        saveData();
+        renderPainterOptions();
+        renderStats();
+        painterForm.reset();
+      });
+
+      const customerForm = document.getElementById('customerForm');
+      customerForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('customerName').value.trim();
+        if (!name) return;
+
+        const phone = document.getElementById('customerPhone').value.trim();
+        const email = document.getElementById('customerEmail').value.trim();
+        const address = document.getElementById('customerAddress').value.trim();
+
+        if (editingCustomerId) {
+          // Update existing
+          const existing = customers.find(c => c.id === editingCustomerId);
+          if (existing) {
+            existing.name = name;
+            existing.phone = phone;
+            existing.email = email;
+            existing.address = address;
+          }
+        } else {
+          // New customer
+          const customer = {
+            id: generateId('c'),
+            name,
+            phone,
+            email,
+            address
+          };
+          customers.push(customer);
+        }
+
+        saveData();
+        renderCustomerOptions();
+        renderCustomerList();
+        renderStats();
+        resetCustomerForm();
+      });
+
+      const cancelEditBtn = document.getElementById('customerCancelEditBtn');
+      cancelEditBtn.addEventListener('click', () => {
+        resetCustomerForm();
+      });
+
+      const jobForm = document.getElementById('jobForm');
+      jobForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const customerId = document.getElementById('jobCustomer').value;
+        const date = document.getElementById('jobDate').value;
+        const time = document.getElementById('jobTime').value;
+        if (!customerId || !date || !time) return;
+
+        const painterSelect = document.getElementById('jobPainters');
+        const painterIds = [...painterSelect.selectedOptions].map(o => o.value);
+
+        const job = {
+          id: generateId('j'),
+          customerId,
+          date,
+          time,
+          duration: Number(document.getElementById('jobDuration').value) || 0,
+          price: Number(document.getElementById('jobPrice').value) || 0,
+          status: document.getElementById('jobStatus').value || 'Scheduled',
+          notes: document.getElementById('jobNotes').value.trim(),
+          painterIds
+        };
+
+        jobs.push(job);
+        saveData();
+        renderStats();
+        renderJobs();
+
+        jobForm.reset();
+        // Keep default duration & status after reset
+        document.getElementById('jobDuration').value = 4;
+        document.getElementById('jobStatus').value = 'Scheduled';
+      });
+    }
+
+    function setupViewSwitching() {
+      const pills = document.querySelectorAll('#viewPills .pill');
+      pills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          currentView = pill.dataset.view;
+          renderViewPills();
+          renderJobs();
+        });
+      });
+    }
+
+    function setupSearch() {
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('input', (e) => {
+        currentSearch = e.target.value;
+        renderJobs();
+      });
+    }
+
+    function setupPainterFilter() {
+      const filterSelect = document.getElementById('painterFilter');
+      filterSelect.addEventListener('change', (e) => {
+        currentPainterFilter = e.target.value || 'all';
+        renderJobs();
+      });
+    }
+
+    function setupCustomerManageToggle() {
+      const btn = document.getElementById('toggleCustomerManageBtn');
+      const wrapper = document.getElementById('customerListWrapper');
+      if (!btn || !wrapper) return;
+
+      let visible = false;
+      btn.addEventListener('click', () => {
+        visible = !visible;
+        wrapper.style.display = visible ? 'block' : 'none';
+        btn.textContent = visible ? 'Hide customer list' : 'Manage existing customers';
+      });
+    }
+
+    function setupPainterListToggle() {
+      const btn = document.getElementById('togglePainterListBtn');
+      const wrapper = document.getElementById('painterListWrapper');
+      if (!btn || !wrapper) return;
+
+      let visible = false;
+      btn.addEventListener('click', () => {
+        visible = !visible;
+        wrapper.style.display = visible ? 'block' : 'none';
+        btn.textContent = visible ? 'Hide painter list' : 'Show painter list';
+      });
+    }
+
+    // ---- Init ----
+    (function init() {
+      loadData();
+      renderTodayLabel();
+      renderPainterOptions();
+      renderCustomerOptions();
+      renderCustomerList();
+      renderStats();
+      setupForms();
+      setupViewSwitching();
+      setupSearch();
+      setupPainterFilter();
+      setupCustomerManageToggle();
+      setupPainterListToggle();
+
+      // Pre-fill job date with today
+      document.getElementById('jobDate').value = getTodayISO();
+
+      renderViewPills();
+      renderJobs();
+    })();
+  </script>
+</body>
+</html>
