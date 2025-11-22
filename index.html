@@ -70,7 +70,7 @@
     }
 
     .column.left {
-      flex: 0 0 360px;
+      flex: 0 0 380px;
     }
 
     .column.right {
@@ -158,6 +158,17 @@
       color: #111827;
     }
 
+    .btn-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .btn-small {
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      margin-top: 0;
+    }
+
     .btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
@@ -197,6 +208,11 @@
       border: 1px solid #e5e7eb;
       padding: 10px 12px;
       background: #f9fafb;
+    }
+
+    .job-conflict {
+      border-color: #f97373;
+      background: #fef2f2;
     }
 
     .job-header {
@@ -289,6 +305,13 @@
       flex-wrap: wrap;
     }
 
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     .toolbar input {
       max-width: 220px;
     }
@@ -296,6 +319,53 @@
     .tagline {
       font-size: 0.8rem;
       color: #6b7280;
+    }
+
+    .painter-list, .customer-list {
+      font-size: 0.8rem;
+      color: #4b5563;
+      margin-top: 6px;
+    }
+
+    .customer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 0;
+      border-bottom: 1px dashed #e5e7eb;
+    }
+
+    .customer-row:last-child {
+      border-bottom: none;
+    }
+
+    .customer-main {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .customer-name {
+      font-weight: 500;
+    }
+
+    .customer-meta {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+
+    .customer-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .conflict-label {
+      font-size: 0.75rem;
+      color: #b91c1c;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
     }
   </style>
 </head>
@@ -307,7 +377,7 @@
           🎨 Painting Schedule
           <span class="badge">Local Only · Offline</span>
         </div>
-        <div class="tagline">Track customers & jobs for your painting business.</div>
+        <div class="tagline">Track customers, painters & jobs for your painting business.</div>
       </div>
       <div class="small" id="todayLabel"></div>
     </header>
@@ -317,8 +387,56 @@
       <section class="column left">
         <h2>Add & Manage</h2>
 
+        <!-- Quote link -->
         <div class="section">
-          <div class="section-title">New Customer</div>
+          <div class="section-title">Quote Tool</div>
+          <a
+            href="quote_sheet_with_accept_decline_pending_buttons.html"
+            target="_blank"
+            class="btn btn-secondary"
+          >
+            Open Quote Sheet
+          </a>
+          <div class="small">
+            Use this link to build or view quotes, then add the job below once approved.
+          </div>
+        </div>
+
+        <!-- Painters -->
+        <div class="section">
+          <div class="section-title">Painters (1–2 or more)</div>
+          <form id="painterForm">
+            <label>
+              Painter name
+              <input type="text" id="painterName" placeholder="e.g. Mike" required />
+            </label>
+            <button type="submit" class="btn btn-primary">＋ Add Painter</button>
+          </form>
+          <div class="small">
+            Add your painters here. Use the button below to see or review the list.
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-secondary"
+            id="togglePainterListBtn"
+            style="margin-top:8px;"
+          >
+            Show painter list
+          </button>
+
+          <div
+            class="painter-list"
+            id="painterListWrapper"
+            style="display:none; margin-top:8px;"
+          >
+            <div id="painterList"></div>
+          </div>
+        </div>
+
+        <!-- Customers -->
+        <div class="section">
+          <div class="section-title">Customers</div>
           <form id="customerForm">
             <label>
               Name
@@ -336,10 +454,33 @@
               Address
               <input type="text" id="customerAddress" placeholder="Street, City" />
             </label>
-            <button type="submit" class="btn btn-primary">＋ Save Customer</button>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <button type="submit" class="btn btn-primary" id="customerSubmitBtn">
+                ＋ Save Customer
+              </button>
+              <button type="button" class="btn btn-secondary" id="customerCancelEditBtn" style="display:none;">
+                Cancel Edit
+              </button>
+            </div>
+            <div class="small" id="customerFormHint">
+              Add a new customer. To edit or delete, use the button below.
+            </div>
           </form>
+
+          <!-- Customer manage toggle + list -->
+          <button type="button" class="btn btn-secondary" id="toggleCustomerManageBtn" style="margin-top:8px;">
+            Manage existing customers
+          </button>
+
+          <div class="customer-list" id="customerListWrapper" style="display:none; margin-top:8px;">
+            <div class="small" style="margin-bottom:4px;">
+              Click “Edit” or “Delete” on a customer below.
+            </div>
+            <div id="customerList"></div>
+          </div>
         </div>
 
+        <!-- Jobs -->
         <div class="section">
           <div class="section-title">New Job</div>
           <form id="jobForm">
@@ -366,6 +507,13 @@
               <input type="number" id="jobPrice" min="0" step="1" />
             </label>
             <label>
+              Assigned painter(s)
+              <select id="jobPainters" multiple size="2">
+                <!-- filled dynamically -->
+              </select>
+              <span class="small">Tip: hold Ctrl (Windows) or Cmd (Mac) to select 2 painters.</span>
+            </label>
+            <label>
               Status
               <select id="jobStatus">
                 <option value="Scheduled">Scheduled</option>
@@ -382,6 +530,7 @@
           </form>
         </div>
 
+        <!-- Stats -->
         <div class="section">
           <div class="section-title">Quick Stats</div>
           <div class="small" id="stats"></div>
@@ -391,8 +540,13 @@
       <!-- RIGHT COLUMN – JOB VIEWS -->
       <section class="column right">
         <div class="toolbar">
-          <h2>Schedule</h2>
-          <input type="search" id="searchInput" placeholder="Search by customer or address…" />
+          <div class="toolbar-left">
+            <h2>Schedule</h2>
+            <select id="painterFilter">
+              <option value="all">All painters</option>
+            </select>
+          </div>
+          <input type="search" id="searchInput" placeholder="Search by customer, address, notes…" />
         </div>
 
         <div class="pill-row" id="viewPills">
@@ -410,27 +564,34 @@
     // ---- Data & Storage ----
     const STORAGE_KEYS = {
       CUSTOMERS: 'painting_customers',
-      JOBS: 'painting_jobs'
+      JOBS: 'painting_jobs',
+      PAINTERS: 'painting_painters'
     };
 
     let customers = [];
     let jobs = [];
+    let painters = [];
     let currentView = 'today';
     let currentSearch = '';
+    let currentPainterFilter = 'all';
+    let editingCustomerId = null;
 
     function loadData() {
       try {
         customers = JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOMERS)) || [];
         jobs = JSON.parse(localStorage.getItem(STORAGE_KEYS.JOBS)) || [];
+        painters = JSON.parse(localStorage.getItem(STORAGE_KEYS.PAINTERS)) || [];
       } catch (e) {
         customers = [];
         jobs = [];
+        painters = [];
       }
     }
 
     function saveData() {
       localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(customers));
       localStorage.setItem(STORAGE_KEYS.JOBS, JSON.stringify(jobs));
+      localStorage.setItem(STORAGE_KEYS.PAINTERS, JSON.stringify(painters));
     }
 
     // ---- Helpers ----
@@ -464,6 +625,10 @@
       return customers.find(c => c.id === id);
     }
 
+    function getPainterById(id) {
+      return painters.find(p => p.id === id);
+    }
+
     function generateId(prefix) {
       return prefix + '_' + Math.random().toString(36).slice(2, 10);
     }
@@ -478,12 +643,103 @@
       }
     }
 
+    function jobTimeRange(job) {
+      const time = job.time || '00:00';
+      const [h, m] = time.split(':').map(Number);
+      const startMinutes = (h || 0) * 60 + (m || 0);
+      const durationMinutes = (Number(job.duration) || 1) * 60; // min 1h for overlap checks
+      const endMinutes = startMinutes + durationMinutes;
+      return { startMinutes, endMinutes };
+    }
+
+    // Returns a Set of job IDs that are double-booked for at least one painter
+    function computeConflicts() {
+      const conflicts = new Set();
+      const groups = {};
+
+      jobs.forEach(job => {
+        const paintersForJob = job.painterIds || [];
+        paintersForJob.forEach(pid => {
+          const key = pid + '|' + job.date;
+          if (!groups[key]) groups[key] = [];
+          groups[key].push(job);
+        });
+      });
+
+      Object.values(groups).forEach(group => {
+        if (group.length < 2) return;
+        group.sort((a, b) => {
+          const ta = jobTimeRange(a).startMinutes;
+          const tb = jobTimeRange(b).startMinutes;
+          return ta - tb;
+        });
+
+        for (let i = 0; i < group.length - 1; i++) {
+          const a = group[i];
+          const b = group[i + 1];
+          const ra = jobTimeRange(a);
+          const rb = jobTimeRange(b);
+          if (rb.startMinutes < ra.endMinutes) {
+            conflicts.add(a.id);
+            conflicts.add(b.id);
+          }
+        }
+      });
+
+      return conflicts;
+    }
+
     // ---- Renderers ----
     function renderTodayLabel() {
       const el = document.getElementById('todayLabel');
       const d = new Date();
       const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
       el.textContent = d.toLocaleDateString(undefined, options);
+    }
+
+    function renderPainterOptions() {
+      const painterSelect = document.getElementById('jobPainters');
+      const filterSelect = document.getElementById('painterFilter');
+
+      const currentFilter = filterSelect.value;
+
+      painterSelect.innerHTML = '';
+      filterSelect.innerHTML = '<option value="all">All painters</option>';
+
+      painters
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .forEach(p => {
+          const opt1 = document.createElement('option');
+          opt1.value = p.id;
+          opt1.textContent = p.name;
+          painterSelect.appendChild(opt1);
+
+          const opt2 = document.createElement('option');
+          opt2.value = p.id;
+          opt2.textContent = p.name;
+          filterSelect.appendChild(opt2);
+        });
+
+      if (currentFilter && [...filterSelect.options].some(o => o.value === currentFilter)) {
+        filterSelect.value = currentFilter;
+      } else {
+        filterSelect.value = 'all';
+        currentPainterFilter = 'all';
+      }
+
+      const listEl = document.getElementById('painterList');
+      if (painters.length === 0) {
+        listEl.textContent = 'No painters added yet.';
+      } else {
+        listEl.innerHTML =
+          'Current painters: ' +
+          painters
+            .slice()
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map(p => `<span>• ${p.name}</span>`)
+            .join(' ');
+      }
     }
 
     function renderCustomerOptions() {
@@ -504,6 +760,70 @@
       }
     }
 
+    function renderCustomerList() {
+      const listEl = document.getElementById('customerList');
+      if (!listEl) return;
+
+      if (customers.length === 0) {
+        listEl.textContent = 'No customers yet. Add your first customer above.';
+        return;
+      }
+
+      listEl.innerHTML = '';
+      customers
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .forEach(c => {
+          const row = document.createElement('div');
+          row.className = 'customer-row';
+
+          const main = document.createElement('div');
+          main.className = 'customer-main';
+
+          const nameEl = document.createElement('div');
+          nameEl.className = 'customer-name';
+          nameEl.textContent = c.name;
+
+          const meta = document.createElement('div');
+          meta.className = 'customer-meta';
+          const parts = [];
+          if (c.phone) parts.push(c.phone);
+          if (c.email) parts.push(c.email);
+          if (c.address) parts.push(c.address);
+          meta.textContent = parts.join(' · ');
+
+          main.appendChild(nameEl);
+          if (parts.length) main.appendChild(meta);
+
+          const actions = document.createElement('div');
+          actions.className = 'customer-actions';
+
+          const editBtn = document.createElement('button');
+          editBtn.type = 'button';
+          editBtn.className = 'btn btn-secondary btn-small';
+          editBtn.textContent = 'Edit';
+          editBtn.addEventListener('click', () => {
+            startEditingCustomer(c.id);
+          });
+
+          const deleteBtn = document.createElement('button');
+          deleteBtn.type = 'button';
+          deleteBtn.className = 'btn btn-danger btn-small';
+          deleteBtn.textContent = 'Delete';
+          deleteBtn.addEventListener('click', () => {
+            deleteCustomer(c.id);
+          });
+
+          actions.appendChild(editBtn);
+          actions.appendChild(deleteBtn);
+
+          row.appendChild(main);
+          row.appendChild(actions);
+
+          listEl.appendChild(row);
+        });
+    }
+
     function renderStats() {
       const statsEl = document.getElementById('stats');
       const totalJobs = jobs.length;
@@ -514,8 +834,9 @@
         .reduce((sum, j) => sum + (Number(j.price) || 0), 0);
 
       statsEl.innerHTML = `
-        Total customers: <strong>${customers.length}</strong><br/>
-        Total jobs: <strong>${totalJobs}</strong> · Open: <strong>${openJobs}</strong><br/>
+        Painters: <strong>${painters.length}</strong><br/>
+        Customers: <strong>${customers.length}</strong><br/>
+        Jobs: <strong>${totalJobs}</strong> · Open: <strong>${openJobs}</strong><br/>
         Jobs today: <strong>${todayJobs}</strong><br/>
         Completed revenue: <strong>${formatCurrency(totalRevenue)}</strong>
       `;
@@ -531,6 +852,11 @@
         list = list.filter(j => isWithinNext7Days(j.date));
       }
 
+      // Painter filter
+      if (currentPainterFilter !== 'all') {
+        list = list.filter(j => (j.painterIds || []).includes(currentPainterFilter));
+      }
+
       // Search filter
       if (currentSearch.trim()) {
         const q = currentSearch.toLowerCase();
@@ -539,10 +865,17 @@
           const customerName = customer ? customer.name.toLowerCase() : '';
           const address = customer ? (customer.address || '').toLowerCase() : '';
           const notes = (j.notes || '').toLowerCase();
+          const paintersNames = (j.painterIds || [])
+            .map(id => {
+              const p = getPainterById(id);
+              return p ? p.name.toLowerCase() : '';
+            })
+            .join(' ');
           return (
             customerName.includes(q) ||
             address.includes(q) ||
-            notes.includes(q)
+            notes.includes(q) ||
+            paintersNames.includes(q)
           );
         });
       }
@@ -558,11 +891,19 @@
       return list;
     }
 
+    function renderViewPills() {
+      const pills = document.querySelectorAll('#viewPills .pill');
+      pills.forEach(pill => {
+        pill.classList.toggle('active', pill.dataset.view === currentView);
+      });
+    }
+
     function renderJobs() {
       const container = document.getElementById('jobsContainer');
       container.innerHTML = '';
 
       const list = filteredJobs();
+      const conflicts = computeConflicts();
 
       if (list.length === 0) {
         const empty = document.createElement('div');
@@ -576,6 +917,8 @@
         const customer = getCustomerById(job.customerId);
         const card = document.createElement('div');
         card.className = 'job-card';
+        const isConflict = conflicts.has(job.id);
+        if (isConflict) card.classList.add('job-conflict');
 
         const header = document.createElement('div');
         header.className = 'job-header';
@@ -600,11 +943,26 @@
         const dateLabel = new Date(job.date + 'T00:00:00');
         const dateFormatted = dateLabel.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 
+        // Painters text
+        let paintersText = '';
+        if (job.painterIds && job.painterIds.length > 0) {
+          const names = job.painterIds
+            .map(id => {
+              const p = getPainterById(id);
+              return p ? p.name : null;
+            })
+            .filter(Boolean);
+          if (names.length > 0) {
+            paintersText = `<span>👷 ${names.join(', ')}</span>`;
+          }
+        }
+
         meta.innerHTML = `
           <span>📅 ${dateFormatted}</span>
           <span>⏰ ${job.time || '--:--'} · ${job.duration || 0}h</span>
           <span>💲 ${formatCurrency(job.price)}</span>
           ${customer && customer.address ? `<span>📍 ${customer.address}</span>` : ''}
+          ${paintersText}
         `;
 
         const notes = document.createElement('div');
@@ -631,12 +989,24 @@
         const select = statusLabel.querySelector('select');
         select.value = job.status || 'Scheduled';
 
+        const infoWrapper = document.createElement('div');
+        infoWrapper.style.textAlign = 'right';
+
         const smallInfo = document.createElement('div');
         smallInfo.className = 'small';
         smallInfo.textContent = `Job ID: ${job.id.slice(0, 8)}…`;
 
+        infoWrapper.appendChild(smallInfo);
+
+        if (isConflict) {
+          const conflictLabel = document.createElement('div');
+          conflictLabel.className = 'conflict-label';
+          conflictLabel.innerHTML = `⚠ Double-booked painter`;
+          infoWrapper.appendChild(conflictLabel);
+        }
+
         footer.appendChild(statusLabel);
-        footer.appendChild(smallInfo);
+        footer.appendChild(infoWrapper);
 
         card.appendChild(header);
         card.appendChild(meta);
@@ -655,41 +1025,128 @@
             job.status = e.target.value;
             saveData();
             renderStats();
-            renderJobs(); // re-render to refresh chip styling
+            renderJobs(); // re-render to refresh chip styling & conflicts
           }
         });
       });
     }
 
-    function renderViewPills() {
-      const pills = document.querySelectorAll('#viewPills .pill');
-      pills.forEach(pill => {
-        pill.classList.toggle('active', pill.dataset.view === currentView);
-      });
+    // ---- Customer edit/delete logic ----
+    function startEditingCustomer(id) {
+      const customer = customers.find(c => c.id === id);
+      if (!customer) return;
+
+      editingCustomerId = id;
+      document.getElementById('customerName').value = customer.name || '';
+      document.getElementById('customerPhone').value = customer.phone || '';
+      document.getElementById('customerEmail').value = customer.email || '';
+      document.getElementById('customerAddress').value = customer.address || '';
+
+      document.getElementById('customerSubmitBtn').textContent = '✔ Update Customer';
+      document.getElementById('customerCancelEditBtn').style.display = 'inline-flex';
+      document.getElementById('customerFormHint').textContent =
+        'Editing customer. Click “Update Customer” to save or “Cancel Edit” to go back.';
+    }
+
+    function resetCustomerForm() {
+      const form = document.getElementById('customerForm');
+      form.reset();
+      editingCustomerId = null;
+      document.getElementById('customerSubmitBtn').textContent = '＋ Save Customer';
+      document.getElementById('customerCancelEditBtn').style.display = 'none';
+      document.getElementById('customerFormHint').textContent =
+        'Add a new customer. To edit or delete, use the button below.';
+    }
+
+    function deleteCustomer(id) {
+      const customer = customers.find(c => c.id === id);
+      if (!customer) return;
+
+      const hasJobs = jobs.some(j => j.customerId === id);
+      let message = `Delete customer "${customer.name}"?`;
+      if (hasJobs) {
+        message += '\n\nThey are attached to existing jobs. The jobs will remain, but show as “Unknown customer.”';
+      }
+
+      if (!confirm(message)) return;
+
+      customers = customers.filter(c => c.id !== id);
+
+      // For existing jobs, keep them but clear customerId if matched
+      jobs = jobs.map(j => (j.customerId === id ? { ...j, customerId: null } : j));
+
+      saveData();
+      renderCustomerOptions();
+      renderCustomerList();
+      renderStats();
+      renderJobs();
+
+      if (editingCustomerId === id) {
+        resetCustomerForm();
+      }
     }
 
     // ---- Event Handlers ----
     function setupForms() {
+      const painterForm = document.getElementById('painterForm');
+      painterForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('painterName').value.trim();
+        if (!name) return;
+
+        const painter = {
+          id: generateId('p'),
+          name
+        };
+
+        painters.push(painter);
+        saveData();
+        renderPainterOptions();
+        renderStats();
+        painterForm.reset();
+      });
+
       const customerForm = document.getElementById('customerForm');
       customerForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const name = document.getElementById('customerName').value.trim();
         if (!name) return;
 
-        const customer = {
-          id: generateId('c'),
-          name,
-          phone: document.getElementById('customerPhone').value.trim(),
-          email: document.getElementById('customerEmail').value.trim(),
-          address: document.getElementById('customerAddress').value.trim()
-        };
+        const phone = document.getElementById('customerPhone').value.trim();
+        const email = document.getElementById('customerEmail').value.trim();
+        const address = document.getElementById('customerAddress').value.trim();
 
-        customers.push(customer);
+        if (editingCustomerId) {
+          // Update existing
+          const existing = customers.find(c => c.id === editingCustomerId);
+          if (existing) {
+            existing.name = name;
+            existing.phone = phone;
+            existing.email = email;
+            existing.address = address;
+          }
+        } else {
+          // New customer
+          const customer = {
+            id: generateId('c'),
+            name,
+            phone,
+            email,
+            address
+          };
+          customers.push(customer);
+        }
+
         saveData();
         renderCustomerOptions();
+        renderCustomerList();
         renderStats();
+        resetCustomerForm();
+      });
 
-        customerForm.reset();
+      const cancelEditBtn = document.getElementById('customerCancelEditBtn');
+      cancelEditBtn.addEventListener('click', () => {
+        resetCustomerForm();
       });
 
       const jobForm = document.getElementById('jobForm');
@@ -700,6 +1157,9 @@
         const time = document.getElementById('jobTime').value;
         if (!customerId || !date || !time) return;
 
+        const painterSelect = document.getElementById('jobPainters');
+        const painterIds = [...painterSelect.selectedOptions].map(o => o.value);
+
         const job = {
           id: generateId('j'),
           customerId,
@@ -708,7 +1168,8 @@
           duration: Number(document.getElementById('jobDuration').value) || 0,
           price: Number(document.getElementById('jobPrice').value) || 0,
           status: document.getElementById('jobStatus').value || 'Scheduled',
-          notes: document.getElementById('jobNotes').value.trim()
+          notes: document.getElementById('jobNotes').value.trim(),
+          painterIds
         };
 
         jobs.push(job);
@@ -742,15 +1203,54 @@
       });
     }
 
+    function setupPainterFilter() {
+      const filterSelect = document.getElementById('painterFilter');
+      filterSelect.addEventListener('change', (e) => {
+        currentPainterFilter = e.target.value || 'all';
+        renderJobs();
+      });
+    }
+
+    function setupCustomerManageToggle() {
+      const btn = document.getElementById('toggleCustomerManageBtn');
+      const wrapper = document.getElementById('customerListWrapper');
+      if (!btn || !wrapper) return;
+
+      let visible = false;
+      btn.addEventListener('click', () => {
+        visible = !visible;
+        wrapper.style.display = visible ? 'block' : 'none';
+        btn.textContent = visible ? 'Hide customer list' : 'Manage existing customers';
+      });
+    }
+
+    function setupPainterListToggle() {
+      const btn = document.getElementById('togglePainterListBtn');
+      const wrapper = document.getElementById('painterListWrapper');
+      if (!btn || !wrapper) return;
+
+      let visible = false;
+      btn.addEventListener('click', () => {
+        visible = !visible;
+        wrapper.style.display = visible ? 'block' : 'none';
+        btn.textContent = visible ? 'Hide painter list' : 'Show painter list';
+      });
+    }
+
     // ---- Init ----
     (function init() {
       loadData();
       renderTodayLabel();
+      renderPainterOptions();
       renderCustomerOptions();
+      renderCustomerList();
       renderStats();
       setupForms();
       setupViewSwitching();
       setupSearch();
+      setupPainterFilter();
+      setupCustomerManageToggle();
+      setupPainterListToggle();
 
       // Pre-fill job date with today
       document.getElementById('jobDate').value = getTodayISO();
